@@ -7,8 +7,6 @@ import {
 	ChoiceProperty,
 	CircuitComponent,
 	ComponentSymbol,
-	defaultFill,
-	defaultStroke,
 	EnumOption,
 	InfoProperty,
 	MainController,
@@ -20,6 +18,7 @@ import {
 	SliderProperty,
 	SnappingInfo,
 	SnapPoint,
+	SymbolColorable,
 	SymbolOption,
 	TikzNodeCommand,
 	Variant,
@@ -36,7 +35,7 @@ export type NodeSymbolSaveObject = NodeSaveObject & {
 /**
  * The class representing all node components which are based on static symbols from the symbol database, i.e. node circuitikz symbols
  */
-export class NodeSymbolComponent extends NodeComponent {
+export class NodeSymbolComponent extends SymbolColorable(NodeComponent) {
 	private static jsonID = "node"
 	static {
 		CircuitComponent.jsonSaveMap.set(NodeSymbolComponent.jsonID, NodeSymbolComponent)
@@ -127,8 +126,10 @@ export class NodeSymbolComponent extends NodeComponent {
 
 		this.componentVisualization = CanvasController.instance.canvas.use(this.componentVariant.symbol)
 		this.componentVisualization.fill("none")
-		this.componentVisualization.stroke(defaultStroke)
-		this.componentVisualization.node.style.color = defaultStroke
+		if (symbol.fillable) {
+			this.enableFillColor()
+		}
+		this.updateSymbolColors()
 		this.referencePosition = this.componentVariant.mid
 		this.visualization.add(this.componentVisualization)
 		this.dragElement = this.componentVisualization
@@ -141,6 +142,11 @@ export class NodeSymbolComponent extends NodeComponent {
 	}
 
 	public resizable(resize: boolean): void {}
+
+	public updateTheme(): void {
+		super.updateTheme()
+		this.updateSymbolColors()
+	}
 
 	protected optionsFromProperties(): SymbolOption[] {
 		const selectedOptions: SymbolOption[] = []
