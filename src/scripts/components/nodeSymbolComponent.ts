@@ -114,7 +114,7 @@ export class NodeSymbolComponent extends SymbolColorable(NodeComponent) {
 
 			if (this.bodyDiodeOptionProperty) {
 				this.bodyDiodeSolidProperty = new BooleanProperty(
-					"Solid body diode",
+					"solid body diode",
 					false,
 					false,
 					undefined,
@@ -128,7 +128,7 @@ export class NodeSymbolComponent extends SymbolColorable(NodeComponent) {
 				this.bodyDiodeOptionProperty.addChangeListener((ev) => {
 					this.bodyDiodeSolidProperty.disabled = !ev.value
 				})
-				this.properties.add(PropertyCategories.options, this.bodyDiodeSolidProperty)
+				this.properties.add(PropertyCategories.stroke, this.bodyDiodeSolidProperty)
 			}
 			for (const enumOption of symbol.possibleEnumOptions) {
 				let choices: ChoiceEntry[] = enumOption.selectNone ? [{ key: "-", name: "--default--" }] : []
