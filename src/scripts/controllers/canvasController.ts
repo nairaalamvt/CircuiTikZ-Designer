@@ -50,6 +50,10 @@ export class CanvasController {
 	 * The line marking the y axis
 	 */
 	public yAxis: SVG.Line
+	/**
+	 * The dashed line marking the right edge of the canvas when canvasWidthMode is bounded
+	 */
+	public columnBoundary: SVG.Line
 
 	/** Distance between major grid lines
 	 */
@@ -58,6 +62,19 @@ export class CanvasController {
 	 */
 	public majorGridSubdivisions = 4
 	public gridVisible = true
+
+	/**
+	 * Standard print column widths (inches), for sizing a figure to fit a journal/paper column.
+	 * One column = 3.5in = 88.9mm = 21pc; two columns = 7.16in = 182mm = 43pc (these are the canonical
+	 * inch values; the mm/pc figures are the commonly quoted roundings of the same width).
+	 */
+	private static readonly oneColumnWidthIn = 3.5
+	private static readonly twoColumnWidthIn = 7.16
+	/**
+	 * When bounded, the grid/canvas is only drawn between x=0 and x=<width> (still infinite vertically).
+	 * Purely a visual guide - panning, placement and export are unaffected.
+	 */
+	public canvasWidthMode: "free" | "onecolumn" | "twocolumn" = "free"
 
 	/**
 	 * Needed for window size changes to reconstruct the old zoom level.
@@ -101,6 +118,7 @@ export class CanvasController {
 		this.paper = SVG.SVG("#grid") as SVG.Rect
 		this.xAxis = SVG.SVG("#xAxis") as SVG.Line
 		this.yAxis = SVG.SVG("#yAxis") as SVG.Line
+		this.columnBoundary = SVG.SVG("#columnBoundary") as SVG.Line
 
 		document.addEventListener("mouseup", (ev) => {
 			CanvasController.instance.draggingFromInput = null
@@ -186,6 +204,52 @@ export class CanvasController {
 				this.paper.addClass("d-none")
 			}
 		})
+
+		for (const radio of document.getElementsByName(
+			"canvasWidthMode"
+		) as NodeListOf<HTMLInputElement>) {
+			radio.addEventListener("change", (ev) => {
+				if (radio.checked) {
+					this.setCanvasWidthMode(radio.value as "free" | "onecolumn" | "twocolumn")
+				}
+			})
+		}
+	}
+
+	/**
+	 * Width in px of the given bounded canvasWidthMode, or null if unbounded ("free").
+	 */
+	private getColumnWidthPx(mode: "free" | "onecolumn" | "twocolumn"): number | null {
+		switch (mode) {
+			case "onecolumn":
+				return new SVG.Number(CanvasController.oneColumnWidthIn, "in").convertToUnit("px").value
+			case "twocolumn":
+				return new SVG.Number(CanvasController.twoColumnWidthIn, "in").convertToUnit("px").value
+			default:
+				return null
+		}
+	}
+
+	public setCanvasWidthMode(mode: "free" | "onecolumn" | "twocolumn") {
+		this.canvasWidthMode = mode
+		for (const radio of document.getElementsByName(
+			"canvasWidthMode"
+		) as NodeListOf<HTMLInputElement>) {
+			radio.checked = radio.value === mode
+		}
+		const width = this.getColumnWidthPx(mode)
+		if (width == null) {
+			this.paper.width("100%").height("100%")
+			this.columnBoundary.addClass("d-none")
+		} else {
+			// anchor the bounded band at x=0 (matching the y axis), independent of the current pan position
+			this.paper.x(0).width(width)
+			this.columnBoundary.removeClass("d-none").attr({ x1: width, x2: width })
+		}
+		let customEvent = new CustomEvent<PanningEventDetail>("", {
+			detail: { box: this.canvas.viewbox(), event: null },
+		})
+		this.movePaper(customEvent)
 	}
 
 	public setSettings(settings: CanvasSettings) {
@@ -198,6 +262,7 @@ export class CanvasController {
 		if (!this.gridVisible) {
 			this.paper.addClass("d-none")
 		}
+		this.setCanvasWidthMode(settings.canvasWidthMode || "free")
 		if (settings.viewBox) {
 			this.canvas.viewbox(settings.viewBox)
 			this.canvas.zoom(settings.viewZoom, new SVG.Point())
@@ -510,8 +575,15 @@ export class CanvasController {
 			this.zoomCurrent = evt.detail.level
 		}
 		let box: SVG.Box = this.canvas.viewbox()
-		this.paper.move(box.x, box.y)
+		if (this.canvasWidthMode === "free") {
+			this.paper.move(box.x, box.y)
+		} else {
+			// bounded mode: x/width are fixed (set in setCanvasWidthMode), only follow the viewbox vertically
+			// so the grid stays infinite in that direction
+			this.paper.y(box.y).height(box.h)
+		}
 		this.xAxis.attr({ x1: box.x, x2: box.x2 })
 		this.yAxis.attr({ y1: box.y, y2: box.y2 })
+		this.columnBoundary.attr({ y1: box.y, y2: box.y2 })
 	}
 }

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Canvas width setting to bound the grid horizontally to a standard print column width (one column: 3.5in / 88.9mm / 21pc, or two columns: 7.16in / 182mm / 43pc), for sizing figures to fit a journal/paper layout. The grid stays infinite vertically; this is a visual guide only and doesn't affect placement, panning, or export
+
 ## [0.8.2]
 
 ### Changed

@@ -49,4 +49,14 @@
 	<rect id="grid" x="0" y="0" width="100%" height="100%" fill="url(#gridPattern)" />
 	<line id="yAxis" x1="0" x2="0" y1="0" y2="100%" stroke="var(--bs-primary-text-emphasis)" stroke-width="0.3pt" />
 	<line id="xAxis" x1="0" x2="100%" y1="0" y2="0" stroke="var(--bs-primary-text-emphasis)" stroke-width="0.3pt" />
+	<line
+		id="columnBoundary"
+		x1="0"
+		x2="0"
+		y1="0"
+		y2="100%"
+		stroke="var(--bs-danger-text-emphasis)"
+		stroke-width="0.5pt"
+		stroke-dasharray="6,6"
+		class="d-none" />
 </svg>

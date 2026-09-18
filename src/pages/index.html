@@ -340,6 +340,47 @@
 										<div class="flex-shrink-1">Current grid spacing:</div>
 										<span id="gridInfo" class="flex-shrink-0"></span>
 									</div>
+									<div id="canvasWidthMode" class="d-flex flex-column w-100 gap-1">
+										<label class="form-label mb-0">Canvas width</label>
+										<div class="form-check m-0">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="canvasWidthMode"
+												id="canvasWidthModeFree"
+												value="free"
+												checked />
+											<label class="form-check-label" for="canvasWidthModeFree">
+												Free (infinite)
+											</label>
+										</div>
+										<div class="form-check m-0">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="canvasWidthMode"
+												id="canvasWidthModeOneColumn"
+												value="onecolumn" />
+											<label class="form-check-label" for="canvasWidthModeOneColumn">
+												One column (3.5 in / 88.9 mm / 21 pc)
+											</label>
+										</div>
+										<div class="form-check m-0">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="canvasWidthMode"
+												id="canvasWidthModeTwoColumn"
+												value="twocolumn" />
+											<label class="form-check-label" for="canvasWidthModeTwoColumn">
+												Two columns (7.16 in / 182 mm / 43 pc)
+											</label>
+										</div>
+										<div class="form-text mt-0">
+											Bounds the grid horizontally to the chosen width; it stays infinite
+											vertically. Purely a visual guide.
+										</div>
+									</div>
 								</div>
 							</div>
 							<div class="container-fluid w-100 gap-3 m-0 px-0" id="propertiesEntries"></div>

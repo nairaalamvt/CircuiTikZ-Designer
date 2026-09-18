@@ -57,6 +57,7 @@ export type CanvasSettings = {
 	majorGridSubdivisions?: number
 	viewBox?: SVG.Box
 	viewZoom?: number
+	canvasWidthMode?: "free" | "onecolumn" | "twocolumn"
 }
 
 export enum Modes {
@@ -657,6 +658,7 @@ export class MainController {
 				data.settings.gridVisible = CanvasController.instance.gridVisible
 				data.settings.majorGridSizecm = CanvasController.instance.majorGridSizecm
 				data.settings.majorGridSubdivisions = CanvasController.instance.majorGridSubdivisions
+				data.settings.canvasWidthMode = CanvasController.instance.canvasWidthMode
 				data.settings.viewBox = CanvasController.instance.canvas.viewbox()
 				data.settings.viewZoom = CanvasController.instance.currentZoom
 				data.designName = MainController.instance.designName.value || undefined
